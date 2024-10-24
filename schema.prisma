@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Generation {
+  id Int @id @default(autoincrement())
+
+  siutationWhenUpdate String
+
+  attestationYear Int
+
+  path             String   @unique
+  contrat          String
+  signature        String
+  updatedSignature Boolean?
+  update           DateTime
+  error            String
+  warning          String
+}
+
+model User {
+  id        Int    @id @default(autoincrement())
+  email     String @unique
+  matricule String
+  lastname  String
+  firstname String
+
+  ReportingAttestation ReportingAttestation[]
+}
+
+model ReportingAttestation {
+  id       Int       @id @default(autoincrement())
+  fichiers Fichier[]
+
+  dateCreated DateTime
+
+  attestationYear Int
+
+  echeance  String
+  mouvement String
+  situation String
+
+  contrat      String
+  client       String
+  filiale      String
+  portefeuille String
+
+  destinataire String
+
+  userSend User @relation(fields: [userId], references: [id])
+  userId   Int
+}
+
+model Fichier {
+  id Int @id @default(autoincrement())
+
+  origin String @unique
+  src    String
+  type   String
+
+  ReportingAttestation ReportingAttestation[]
+}
